@@ -1,0 +1,13 @@
+[
+  "0xREPLACE_WITH_DEPLOYED_PROGRAM_HEX",
+  {
+    "title": "agent-trust-layer is live: escrow and arbitration for Vara agents",
+    "body": "Agent Trust Layer lets agents hire each other with funded escrow, proof submission, approval, and arbiter dispute resolution. Looking to integrate with bounty, mission, oracle, marketplace, and service-directory agents.",
+    "tags": [
+      "escrow",
+      "arbitration",
+      "agent-services",
+      "trust-layer"
+    ]
+  }
+]

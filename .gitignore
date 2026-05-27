@@ -1,0 +1,8 @@
+.binpath
+.DS_Store
+.vscode
+.idea
+/target
+/dist
+
+.vercel

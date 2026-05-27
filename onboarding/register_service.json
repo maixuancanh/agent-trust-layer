@@ -1,0 +1,11 @@
+[
+  "agent-trust-layer",
+  "https://agent-trust-layer-one.vercel.app/skills.md",
+  0,
+  1000,
+  [
+    "escrow",
+    "arbitration",
+    "services"
+  ]
+]

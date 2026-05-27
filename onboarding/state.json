@@ -1,0 +1,69 @@
+{
+  "participant_handle": "enzo95",
+  "dapp_handle": "agent-trust-layer",
+  "participant_github_url": "https://github.com/maixuancanh",
+  "app_github_url": "https://github.com/maixuancanh",
+  "operator_account": "enzo95",
+  "operator_hex": "0xa223c6a7e56cd7cfc6d62ea60d3d17dfee700e62658018ddcadc7ebd5976b62d",
+  "operator_ss58": "kGjCanULZGwWAiR2cun4T2KmgQmrM98fcBDGmVQqgzfPC2Wv8",
+  "vara_agents_program_id": "0x19f27f4c906a5ac230be82d907850d44c7a7fff1b4c6903f62e78e09e0b353f3",
+  "voucher_id": "0xcd3c0dc9cd762b26cb9691611e4c19724139ea158e8decaf575a72824668ccc5",
+  "register_participant": {
+    "tx_hash": "0x4cbabd35163c8a31d534bb7ea31ba9eef37179623b206ae97e8465ff70d0986e",
+    "block_number": 33302414,
+    "message_id": "0x913f203bfdca244ce199e6815adfa372bb477562bcbff8441775a1fc97aeb3cd"
+  },
+  "local_artifacts": {
+    "wasm": "C:\\tmp\\agent-trust-layer-target\\wasm32-gear\\release\\agent_trust_layer.opt.wasm",
+    "idl": "D:\\vara network agent\\agent-trust-layer\\artifacts\\agent_trust_layer.idl",
+    "skills": "D:\\vara network agent\\agent-trust-layer\\skills.md"
+  },
+  "deployed_program": {
+    "program_id": "0x8a2ec7efc5ca775b531f042fe2d8da67e8b46e786044cb5f375084c8a88f797f",
+    "code_id": "0x82f89fd4941912a1b72d5549b34e2bbb2f71712b443ee0d42b4e29a521f1a30b",
+    "tx_hash": "0x8655cf75913a0e827911df2906300c61c00e373d790c29551d91c17d74c4cfbb",
+    "block_number": 33303544
+  },
+  "published_artifacts": {
+    "deployment_url": "https://agent-trust-layer-one.vercel.app",
+    "skills_url": "https://agent-trust-layer-one.vercel.app/skills.md",
+    "idl_url": "https://agent-trust-layer-one.vercel.app/agent_trust_layer.idl"
+  },
+  "register_application": {
+    "tx_hash": "0xdc0e1bef4fe69730dd58eb0c494f7e74ddfab6a58384ecb6ebffaa8547194a3b",
+    "block_number": 33303686,
+    "message_id": "0xc94ed141cd6c7712a6987ea2b6f3bfc206a4d82a46ccd1dad32864b66e67136c"
+  },
+  "board_identity_card": {
+    "tx_hash": "0x0b4b758efb4fca4e8106a1f246b2009a1cfa5a8385b0f7a9672c6119c9d29786",
+    "block_number": 33303789,
+    "message_id": "0x0bf5ff39dfb896d225fcd958ad1f8c414336e482d69110efe5b17b8fc23a4146"
+  },
+  "board_announcement": {
+    "id": 257,
+    "tx_hash": "0x5b17918dcc69a9b4e27ef5282385f59e49a728ed06c8db115c8c8627a0de54ed",
+    "block_number": 33304462,
+    "message_id": "0x55961d5cd4183af1711ff5f04d8f2e5d8a1f428abf60f856c06f315109729f0a"
+  },
+  "chat_intro": {
+    "id": 2654,
+    "tx_hash": "0x6c7cd30f950e91b984a6999080b372066b4d00fc2c9b42e525096ab873f77599",
+    "block_number": 33304563,
+    "message_id": "0x39b369150f61513bc8bcbabcf469ec55fbdeeddbf00a2d1b97d57e4bfb5cca1a"
+  },
+  "submit_application": {
+    "tx_hash": "0x1f87cd6a2a8094124ed6ca29379951007db0988dc87c182339db4daa67d020ec",
+    "block_number": 33309477,
+    "message_id": "0x3387f0c8ec0379df9ff43572904eb992bd6d4f6c246c0c69c4dccd4039e98511"
+  },
+  "service_passport": {
+    "tx_hash": "0x876cdd54497f480fbdc383386da9267b42374585c74ed79fd75d514f0d19a481",
+    "block_number": 33309629,
+    "message_id": "0x404888ed55b93e46573a7ae856fdbba0f9e57fc36b471f334f27c33e2b2feb37"
+  },
+  "hashes": {
+    "skills_hash": "0x093236fa797a2a30218f1fca99df5280db8db184a6643712a7545cd9df88ba1c",
+    "idl_hash": "0x42caf28234e233a9026679f8e617a591c13d195c124adb4cd28acf8a0ffe76a8"
+  },
+  "status": "submitted"
+}
