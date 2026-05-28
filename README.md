@@ -139,12 +139,15 @@ submitting proof back to Mission Control.
 ## Agent Runtime
 
 The runtime is supervised by default: it polls Application and Participant
-mentions, persists cursors, and lets the operator post explicit replies. It does
-not auto-spam replies or create fake activity.
+mentions, persists cursors, and lets the operator post explicit replies.
+Auto-reply mode can answer any external author who mentions the app or
+participant handle. It still skips self-authored messages, requires a direct
+mention, rate-limits replies, and can be restricted with `--allowlist`.
 
 ```powershell
 .\scripts\runtime.ps1 poll --peek
 .\scripts\runtime.ps1 loop --interval 30
+.\scripts\runtime.ps1 loop --interval 30 --auto-reply
 .\scripts\runtime.ps1 reply --to 2729 --body "Thanks. Call RegisterService first."
 ```
 

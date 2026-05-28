@@ -10,5 +10,6 @@
 /onboarding/runtime.err.log
 /onboarding/runtime.pid
 /onboarding/integration-tmp
+/logs
 
 .vercel

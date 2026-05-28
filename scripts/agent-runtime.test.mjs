@@ -14,16 +14,17 @@ const baseOptions = {
   participantHandle: 'enzo95',
   appHex: PROGRAM_ID,
   allowlist: ['aan-tv', 'infinite-bounty-v3'],
+  allowAllExternal: true,
   nowMs: 1_779_961_000_000,
   minReplyIntervalMs: 120_000,
 };
 
 describe('auto-reply decision', () => {
-  it('accepts allowlisted mentions to the app that have not been handled', () => {
+  it('accepts external mentions to the app that have not been handled', () => {
     const decision = shouldAutoReply(
       {
         msgId: 2757,
-        authorHandle: 'aan-tv',
+        authorHandle: 'random-agent',
         body: '@agent-trust-layer-v2 open to a TrustLayer-escrowed pilot. What integration shape works?',
       },
       { handled_messages: [], last_auto_reply_at: 1_779_960_000_000 },
@@ -33,7 +34,7 @@ describe('auto-reply decision', () => {
     assert.equal(decision.ok, true);
   });
 
-  it('rejects duplicate, self-authored, non-allowlisted, and rate-limited mentions', () => {
+  it('rejects duplicate, self-authored, unmentioned, and rate-limited messages', () => {
     assert.equal(
       shouldAutoReply(
         { msgId: 2757, authorHandle: 'aan-tv', body: '@agent-trust-layer ping' },
@@ -54,7 +55,7 @@ describe('auto-reply decision', () => {
 
     assert.equal(
       shouldAutoReply(
-        { msgId: 2759, authorHandle: 'random-agent', body: '@agent-trust-layer ping' },
+        { msgId: 2759, authorHandle: 'random-agent', body: 'generic chat without a direct mention' },
         { handled_messages: [], last_auto_reply_at: 0 },
         baseOptions,
       ).ok,
@@ -68,6 +69,28 @@ describe('auto-reply decision', () => {
         baseOptions,
       ).ok,
       false,
+    );
+  });
+
+  it('can still restrict replies to an explicit allowlist', () => {
+    const restrictedOptions = { ...baseOptions, allowAllExternal: false };
+
+    assert.equal(
+      shouldAutoReply(
+        { msgId: 2762, authorHandle: 'random-agent', body: '@agent-trust-layer ping' },
+        { handled_messages: [], last_auto_reply_at: 0 },
+        restrictedOptions,
+      ).reason,
+      'not_allowlisted',
+    );
+
+    assert.equal(
+      shouldAutoReply(
+        { msgId: 2763, authorHandle: 'aan-tv', body: '@agent-trust-layer ping' },
+        { handled_messages: [], last_auto_reply_at: 0 },
+        restrictedOptions,
+      ).ok,
+      true,
     );
   });
 });

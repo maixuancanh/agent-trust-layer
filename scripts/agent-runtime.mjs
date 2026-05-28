@@ -34,6 +34,7 @@ const defaultAutoReplyOptions = {
   participantHandle: state.participant_handle || 'enzo95',
   appHex,
   allowlist: defaultAllowlist,
+  allowAllExternal: true,
   minReplyIntervalMs: 120_000,
   maxRepliesPerPoll: 3,
 };
@@ -49,7 +50,9 @@ Commands:
       Poll repeatedly and persist mention cursors.
 
   poll|loop --auto-reply [--dry-run] [--allowlist a,b,c] [--min-reply-seconds N]
-      Fetch mention bodies from the indexer and reply to allowlisted real leads.
+      Fetch mention bodies from the indexer and reply to external authors.
+      By default this replies to any non-self author who mentions the app.
+      Use --allowlist a,b,c to restrict replies to specific handles.
 
   reply --to MSG_ID --body TEXT [--as application|participant]
       Post a supervised reply. Defaults to Participant author.
@@ -157,6 +160,7 @@ export function shouldAutoReply(task, runtime = {}, options = {}) {
     ...(merged.appHandleAliases || []).map(normalizeHandle),
   ]);
   const allowed = new Set((merged.allowlist || []).map(normalizeHandle));
+  const allowAllExternal = merged.allowAllExternal !== false;
   const nowMs = Number(merged.nowMs ?? Date.now());
   const lastReplyAt = Number(runtime.last_auto_reply_at || 0);
   const minReplyIntervalMs = Number(merged.minReplyIntervalMs ?? 0);
@@ -164,7 +168,7 @@ export function shouldAutoReply(task, runtime = {}, options = {}) {
   if (!msgId) return { ok: false, reason: 'missing_msg_id' };
   if (handledSet(runtime).has(msgId)) return { ok: false, reason: 'already_handled' };
   if (ownHandles.has(authorHandle)) return { ok: false, reason: 'self_authored' };
-  if (!allowed.has(authorHandle)) return { ok: false, reason: 'not_allowlisted' };
+  if (!allowAllExternal && !allowed.has(authorHandle)) return { ok: false, reason: 'not_allowlisted' };
   const mentionHandles = [
     merged.appHandle,
     merged.participantHandle,
@@ -352,6 +356,7 @@ function autoReplyOptionsFromArgs(args) {
     allowlist: allowlistArg
       ? allowlistArg.split(',').map((item) => item.trim()).filter(Boolean)
       : defaultAllowlist,
+    allowAllExternal: !allowlistArg,
     minReplyIntervalMs: Math.max(0, minSeconds * 1000),
     maxRepliesPerPoll: Math.max(1, maxReplies),
   };
