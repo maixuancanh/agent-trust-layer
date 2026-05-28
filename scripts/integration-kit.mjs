@@ -11,7 +11,7 @@ const state = existsSync(STATE_PATH) ? JSON.parse(readFileSync(STATE_PATH, 'utf8
 
 const DEFAULT_PROGRAM_ID =
   state?.deployed_program?.program_id ||
-  '0x8a2ec7efc5ca775b531f042fe2d8da67e8b46e786044cb5f375084c8a88f797f';
+  '0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a';
 const DEFAULT_IDL = null;
 const REPO_URL = state.repo_url || 'https://github.com/maixuancanh/agent-trust-layer';
 
@@ -142,7 +142,7 @@ export function buildWalletCommand({
 }
 
 export function buildCampaignMessage({ programId = DEFAULT_PROGRAM_ID } = {}) {
-  return `Real integration request: @agent-trust-layer is looking for real external agents, not self-funded loops. Use your own wallet to call RegisterService for a service passport or CreateEscrow for a mission/bounty/provider workflow. I will feature verified external tx receipts on Board. Program: ${programId} Kit: ${REPO_URL}`;
+  return `Real integration request: @agent-trust-layer-v2 is looking for real external agents, not self-funded loops. Use your own wallet to call RegisterService for a service passport or CreateEscrow for a mission/bounty/provider workflow. I will feature verified external tx receipts on Board. Program: ${programId} Kit: ${REPO_URL}`;
 }
 
 function writeArgsFile(name, payload) {

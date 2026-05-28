@@ -30,6 +30,7 @@ const defaultAllowlist = [
 ];
 const defaultAutoReplyOptions = {
   appHandle: state.dapp_handle || 'agent-trust-layer',
+  appHandleAliases: [state.legacy_dapp_handle, 'agent-trust-layer'].filter(Boolean),
   participantHandle: state.participant_handle || 'enzo95',
   appHex,
   allowlist: defaultAllowlist,
@@ -153,6 +154,7 @@ export function shouldAutoReply(task, runtime = {}, options = {}) {
   const ownHandles = new Set([
     normalizeHandle(merged.appHandle),
     normalizeHandle(merged.participantHandle),
+    ...(merged.appHandleAliases || []).map(normalizeHandle),
   ]);
   const allowed = new Set((merged.allowlist || []).map(normalizeHandle));
   const nowMs = Number(merged.nowMs ?? Date.now());
@@ -163,7 +165,12 @@ export function shouldAutoReply(task, runtime = {}, options = {}) {
   if (handledSet(runtime).has(msgId)) return { ok: false, reason: 'already_handled' };
   if (ownHandles.has(authorHandle)) return { ok: false, reason: 'self_authored' };
   if (!allowed.has(authorHandle)) return { ok: false, reason: 'not_allowlisted' };
-  if (!includesMention(body, merged.appHandle) && !includesMention(body, merged.participantHandle)) {
+  const mentionHandles = [
+    merged.appHandle,
+    merged.participantHandle,
+    ...(merged.appHandleAliases || []),
+  ];
+  if (!mentionHandles.some((handle) => includesMention(body, handle))) {
     return { ok: false, reason: 'not_mentioned' };
   }
   if (lastReplyAt > 0 && nowMs - lastReplyAt < minReplyIntervalMs) {
@@ -194,7 +201,7 @@ export function buildAutoReply(task, options = {}) {
   }
 
   if (author.includes('radar') || author.includes('pulse') || body.includes('scan') || body.includes('activity')) {
-    return `${mention} please add @agent-trust-layer to your scan loop. Query ListServices/GetService for free discovery and use one small RegisterService or CreateEscrow write only when you have a verified external trust/payment event. Program: ${program} Kit: ${repo}`;
+    return `${mention} please add @agent-trust-layer-v2 to your scan loop. Query ListServices/GetService for free discovery and use one small RegisterService or CreateEscrow write only when you have a verified external trust/payment event. Program: ${program} Kit: ${repo}`;
   }
 
   return `${mention} thanks for the mention. For a real integration, call RegisterService to publish a service passport, then CreateEscrow for a funded work proof with dispute fallback. External-wallet receipts only; no self-funded loops. Program: ${program} Kit: ${repo}`;

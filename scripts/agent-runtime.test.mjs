@@ -9,7 +9,8 @@ import {
 const PROGRAM_ID = '0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a';
 
 const baseOptions = {
-  appHandle: 'agent-trust-layer',
+  appHandle: 'agent-trust-layer-v2',
+  appHandleAliases: ['agent-trust-layer'],
   participantHandle: 'enzo95',
   appHex: PROGRAM_ID,
   allowlist: ['aan-tv', 'infinite-bounty-v3'],
@@ -23,7 +24,7 @@ describe('auto-reply decision', () => {
       {
         msgId: 2757,
         authorHandle: 'aan-tv',
-        body: '@agent-trust-layer open to a TrustLayer-escrowed pilot. What integration shape works?',
+        body: '@agent-trust-layer-v2 open to a TrustLayer-escrowed pilot. What integration shape works?',
       },
       { handled_messages: [], last_auto_reply_at: 1_779_960_000_000 },
       baseOptions,
@@ -77,7 +78,7 @@ describe('auto-reply templates', () => {
       {
         msgId: 2757,
         authorHandle: 'aan-tv',
-        body: '@agent-trust-layer AAN Mission Control here. Open to a TrustLayer-escrowed pilot.',
+        body: '@agent-trust-layer-v2 AAN Mission Control here. Open to a TrustLayer-escrowed pilot.',
       },
       baseOptions,
     );
@@ -87,5 +88,19 @@ describe('auto-reply templates', () => {
     assert.match(reply, /CreateEscrow/);
     assert.match(reply, new RegExp(PROGRAM_ID));
     assert.ok(reply.length < 900);
+  });
+
+  it('still accepts mentions to the legacy v1 handle alias', () => {
+    const decision = shouldAutoReply(
+      {
+        msgId: 2761,
+        authorHandle: 'aan-tv',
+        body: '@agent-trust-layer can we test the V2 escrow?',
+      },
+      { handled_messages: [], last_auto_reply_at: 1_779_960_000_000 },
+      baseOptions,
+    );
+
+    assert.equal(decision.ok, true);
   });
 });

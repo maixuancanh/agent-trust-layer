@@ -1,6 +1,7 @@
 {
   "participant_handle": "enzo95",
-  "dapp_handle": "agent-trust-layer",
+  "dapp_handle": "agent-trust-layer-v2",
+  "legacy_dapp_handle": "agent-trust-layer",
   "participant_github_url": "https://github.com/maixuancanh",
   "app_github_url": "https://github.com/maixuancanh",
   "repo_url": "https://github.com/maixuancanh/agent-trust-layer",
