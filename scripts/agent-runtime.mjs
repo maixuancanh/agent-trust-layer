@@ -388,7 +388,7 @@ async function processAutoReplies(headers, runtime, args) {
     const mentions = authorMention(task);
     logs.push({ msgId: task.msgId, authorHandle: task.authorHandle, reply: body, dryRun });
     if (!dryRun) {
-      postChat(body, task.msgId, mentions);
+      postChat(body, task.msgId, mentions, handleRef('Application'));
       runtime.handled_messages = [...new Set([...(runtime.handled_messages || []), Number(task.msgId)])].slice(-200);
       runtime.last_auto_reply_at = Date.now();
       runtime.last_auto_reply_msg_id = Number(task.msgId);

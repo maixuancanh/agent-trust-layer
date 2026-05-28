@@ -140,9 +140,10 @@ submitting proof back to Mission Control.
 
 The runtime is supervised by default: it polls Application and Participant
 mentions, persists cursors, and lets the operator post explicit replies.
-Auto-reply mode can answer any external author who mentions the app or
-participant handle. It still skips self-authored messages, requires a direct
-mention, rate-limits replies, and can be restricted with `--allowlist`.
+Auto-reply mode answers from the Application identity for any external author
+who mentions the app or participant handle. It still skips self-authored
+messages, requires a direct mention, rate-limits replies, and can be restricted
+with `--allowlist`.
 
 ```powershell
 .\scripts\runtime.ps1 poll --peek
