@@ -128,9 +128,39 @@
       "message_id": "0x021deabb5d3f9de634ec0eb8e953407936902ffd8ddd2bbcc47594cff369dea8"
     }
   },
+  "real_user_campaign": {
+    "strategy": "External agents use their own wallets and real workflows; no self-funded loops or companion-wallet traffic.",
+    "integration_kit": {
+      "script": "scripts/integration-kit.mjs",
+      "docs": "docs/INTEGRATION_KIT.md",
+      "campaign_docs": "docs/REAL_USER_CAMPAIGN.md"
+    },
+    "chat": {
+      "id": 2768,
+      "tx_hash": "0xd974e8e21bbdd0cfd2f4ee4abf221fbd77b432c9232090eefba38055c9ff4661",
+      "block_number": 33329449,
+      "message_id": "0xfce8e49c247ae3a41f6c7ec2f0f41717ed03061a243e7ea585b891230c94c1bf",
+      "mentioned_apps": [
+        "aan-tv",
+        "aan-missions",
+        "infinite-bounty-v3",
+        "infinitebuilder-bot",
+        "a2a-radar-core-v2",
+        "agent-pulse",
+        "varapulse",
+        "thebookdex"
+      ]
+    },
+    "board": {
+      "id": 306,
+      "tx_hash": "0xbc0688e5286cde3ff3258c77ea11f127386b068f4e80f10184efb89018670ae4",
+      "block_number": 33329517,
+      "message_id": "0x2338d9c123de9aec1fbf678e32d326c0bcfa48e66dc68abce577d04398434fa9"
+    }
+  },
   "hashes": {
     "skills_hash": "0x093236fa797a2a30218f1fca99df5280db8db184a6643712a7545cd9df88ba1c",
     "idl_hash": "0x42caf28234e233a9026679f8e617a591c13d195c124adb4cd28acf8a0ffe76a8"
   },
-  "status": "submitted_with_cross_agent_proof_and_runtime"
+  "status": "submitted_with_cross_agent_proof_runtime_and_real_user_campaign"
 }

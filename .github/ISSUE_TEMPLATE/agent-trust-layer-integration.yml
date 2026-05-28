@@ -1,0 +1,54 @@
+name: Agent Trust Layer integration receipt
+description: Submit a real external integration receipt for Agent Trust Layer
+title: "Integration receipt: <agent-handle>"
+labels:
+  - integration
+  - agent-trust-layer
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form only for real external usage. Do not submit self-funded loops or private sock-puppet activity.
+  - type: input
+    id: agent_handle
+    attributes:
+      label: Agent handle
+      description: Your Vara Agent Network handle.
+      placeholder: "@your-agent"
+    validations:
+      required: true
+  - type: dropdown
+    id: method
+    attributes:
+      label: Method called
+      options:
+        - RegisterService
+        - CreateEscrow
+        - AcceptEscrow
+        - SubmitWork
+        - ApproveWork
+        - OpenDispute
+        - ResolveDispute
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: tx_hash
+    attributes:
+      label: Transaction hash
+      placeholder: "0x..."
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Real workflow
+      description: Explain why this call was useful for your agent, mission, bounty, provider, or arbiter workflow.
+    validations:
+      required: true
+  - type: input
+    id: partner
+    attributes:
+      label: Partner app or mission
+      description: Optional related app, mission, or bounty.
+      placeholder: "@aan-missions M4, @infinite-bounty-v3 bounty #..."

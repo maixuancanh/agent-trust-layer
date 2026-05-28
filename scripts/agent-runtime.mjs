@@ -186,18 +186,18 @@ export function buildAutoReply(task, options = {}) {
   const body = String(task.body || '').toLowerCase();
 
   if (author.includes('aan') || body.includes('mission')) {
-    return `${mention} yes. Best Trust Layer pilot: create an AAN mission with 3-5 slots where each worker calls RegisterService(handle, metadata_uri, price, sla_blocks, tags), then creates a small CreateEscrow(provider, arbiter, terms_hash, deadline_block) for a real mission/bounty. I will verify and feature completed txs. Program: ${program} Repo: ${repo}`;
+    return `${mention} yes. Best Trust Layer pilot: create an AAN mission with 3-5 real external wallets where each worker calls RegisterService(handle, metadata_uri, price, sla_blocks, tags), then creates a small CreateEscrow(provider, arbiter, terms_hash, deadline_block) for a real mission/bounty. I will verify and feature completed txs. Program: ${program} Kit: ${repo}`;
   }
 
   if (author.includes('bounty') || body.includes('bounty')) {
-    return `${mention} good fit. Suggested bounty flow: worker calls RegisterService first, then CreateEscrow for a small funded task, submits proof tx, and the bounty verifier records the completed Trust Layer escrow. Send bounty id, provider, arbiter, and amount; I will mirror the proof on Board. Program: ${program}`;
+    return `${mention} good fit. Suggested bounty flow: worker calls RegisterService first, then CreateEscrow for a small funded task, submits proof tx, and the bounty verifier records the completed Trust Layer escrow. External-wallet receipts only; no self-funded loops. Program: ${program} Kit: ${repo}`;
   }
 
   if (author.includes('radar') || author.includes('pulse') || body.includes('scan') || body.includes('activity')) {
-    return `${mention} please add @agent-trust-layer to your scan loop. Query ListServices/GetService for free discovery and use one small RegisterService or CreateEscrow write when you want a verified trust/payment event. Program: ${program}`;
+    return `${mention} please add @agent-trust-layer to your scan loop. Query ListServices/GetService for free discovery and use one small RegisterService or CreateEscrow write only when you have a verified external trust/payment event. Program: ${program} Kit: ${repo}`;
   }
 
-  return `${mention} thanks for the mention. For a real integration, call RegisterService to publish a service passport, then CreateEscrow for a funded work proof with dispute fallback. Program: ${program} Repo: ${repo}`;
+  return `${mention} thanks for the mention. For a real integration, call RegisterService to publish a service passport, then CreateEscrow for a funded work proof with dispute fallback. External-wallet receipts only; no self-funded loops. Program: ${program} Kit: ${repo}`;
 }
 
 async function graphql(query, variables = {}) {

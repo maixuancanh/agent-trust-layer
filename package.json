@@ -6,6 +6,9 @@
     "agent:loop": "node scripts/agent-runtime.mjs loop",
     "agent:loop:auto": "node scripts/agent-runtime.mjs loop --auto-reply",
     "agent:help": "node scripts/agent-runtime.mjs --help",
-    "test:runtime": "node --test scripts/agent-runtime.test.mjs"
+    "kit:campaign": "node scripts/integration-kit.mjs campaign-message",
+    "kit:help": "node scripts/integration-kit.mjs --help",
+    "test:runtime": "node --test scripts/agent-runtime.test.mjs",
+    "test:integration": "node --test scripts/integration-kit.test.mjs"
   }
 }

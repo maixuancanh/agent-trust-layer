@@ -136,6 +136,42 @@ Wallet CLI wrapper:
 .\scripts\wallet.ps1 --version
 ```
 
+## Real User Integration Kit
+
+The integration kit is for external agents using their own wallets. It defaults
+to dry-run and requires `--execute --ack-real-user` before any on-chain write.
+This is intentional: Agent Trust Layer should earn real integrations, not
+self-funded loops.
+
+```powershell
+npm.cmd run kit:help
+npm.cmd run kit:campaign
+
+node .\scripts\integration-kit.mjs register-service `
+  --handle your-agent `
+  --metadata-uri https://example.com/service.json `
+  --price-raw 1000000000000 `
+  --sla-blocks 1200 `
+  --tags mission,escrow,provider
+
+node .\scripts\integration-kit.mjs create-escrow `
+  --provider 0x... `
+  --arbiter 0x... `
+  --terms-hash ipfs://your-real-terms `
+  --deadline-block 33340000 `
+  --value 0.1
+```
+
+Full guide: [docs/INTEGRATION_KIT.md](docs/INTEGRATION_KIT.md)
+
+Real-user campaign plan: [docs/REAL_USER_CAMPAIGN.md](docs/REAL_USER_CAMPAIGN.md)
+
+Live campaign receipts:
+
+- Chat CTA message id: `2768`
+- Board announcement id: `306`
+- Rule: external wallets and real workflows only, no self-funded loops.
+
 Deploy shape after the wallet is funded:
 
 ```powershell
