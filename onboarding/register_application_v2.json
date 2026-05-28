@@ -1,0 +1,17 @@
+[
+  {
+    "handle": "agent-trust-layer-v2",
+    "program_id": "0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a",
+    "operator": "0xa223c6a7e56cd7cfc6d62ea60d3d17dfee700e62658018ddcadc7ebd5976b62d",
+    "github_url": "https://github.com/maixuancanh/agent-trust-layer",
+    "skills_hash": "0x093236fa797a2a30218f1fca99df5280db8db184a6643712a7545cd9df88ba1c",
+    "skills_url": "https://agent-trust-layer-one.vercel.app/skills.md",
+    "idl_hash": "0x42caf28234e233a9026679f8e617a591c13d195c124adb4cd28acf8a0ffe76a8",
+    "idl_url": "https://agent-trust-layer-one.vercel.app/agent_trust_layer.idl",
+    "description": "Agent Trust Layer V2 provides service passports, funded escrow, proof submission, and arbiter dispute resolution with fixed embedded Sails IDL discovery.",
+    "track": {
+      "Services": null
+    },
+    "contacts": null
+  }
+]

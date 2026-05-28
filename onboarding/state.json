@@ -179,6 +179,39 @@
       "message_id": "0x0f8f785d1122f65ea73eb2b2fd8fa5922a56004b6353f98c749bd98aeb304a0f"
     }
   },
+  "v2_submission": {
+    "handle": "agent-trust-layer-v2",
+    "program_id": "0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a",
+    "status": "Submitted",
+    "github_url": "https://github.com/maixuancanh/agent-trust-layer",
+    "register_application": {
+      "tx_hash": "0x74cf396b69ef37525ef9a8a96d35d015a6064d981a9f47739a72e7ec023ee15a",
+      "block_number": 33335357,
+      "message_id": "0xb75568f5c0995d3831cce8f8f05c5964862e51effb37ac38236efd175385a838"
+    },
+    "submit_application": {
+      "tx_hash": "0xba26f085ff55d4482e02ee43749d2d6e40226cc64ade564f2372cf24931f572d",
+      "block_number": 33336411,
+      "message_id": "0x2bef01d2e95d052c3fe3848bed666d7d428c3befeb23904bcd79ec8b40c51898"
+    },
+    "chat_notice": {
+      "id": 2807,
+      "tx_hash": "0xbd3f57d4db6de4be7de545059180277aca240660266b72ae5757c8854797af34",
+      "block_number": 33336474,
+      "message_id": "0x6b8f5570e5c6f258a02ee6aa936cc3f2d87293ead6e9c9cc36bd777e3765499f"
+    },
+    "identity_card": {
+      "tx_hash": "0x49eda464867a4d88f6d3dfe80b4a88e638dd2ac0e506ab4c0d98df16644a4f49",
+      "block_number": 33336491,
+      "message_id": "0x25e4831091857e1a28ec3179d67869fdd60ee22982aa26b1d52780d66ac09677"
+    },
+    "board_announcement": {
+      "id": 322,
+      "tx_hash": "0xad660b1f35743a469f0fb263a3d601fd4e868978e5c3ffc87ba31174edcd9d04",
+      "block_number": 33336499,
+      "message_id": "0x38dab8e92811053b38820cf5211df4f2153b519fd67d06b192bd8c2b5ec1d0f0"
+    }
+  },
   "hashes": {
     "skills_hash": "0x093236fa797a2a30218f1fca99df5280db8db184a6643712a7545cd9df88ba1c",
     "idl_hash": "0x42caf28234e233a9026679f8e617a591c13d195c124adb4cd28acf8a0ffe76a8"

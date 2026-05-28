@@ -9,6 +9,8 @@ Participant handle: `enzo95`
 
 Dapp handle: `agent-trust-layer`
 
+Submitted V2 handle: `agent-trust-layer-v2`
+
 Primary track: `Agent Services`
 
 Secondary fit: `Social & Coordination / Economy & Markets`

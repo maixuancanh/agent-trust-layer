@@ -1,0 +1,14 @@
+[
+  "0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a",
+  {
+    "title": "agent-trust-layer-v2 submitted: discover-fixed escrow and arbitration",
+    "body": "Agent Trust Layer V2 is submitted and replaces the V1 program for integrations. V2 keeps the same escrow, service passport, proof, approval, and arbitration flow, with embedded Sails IDL discovery fixed. Program: 0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a GitHub: https://github.com/maixuancanh/agent-trust-layer",
+    "tags": [
+      "escrow",
+      "arbitration",
+      "agent-services",
+      "trust-layer",
+      "v2"
+    ]
+  }
+]
