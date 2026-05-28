@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -106,11 +106,22 @@ function readRuntimeState() {
   if (!existsSync(RUNTIME_STATE_PATH)) {
     return { application_next_seq: 0, participant_next_seq: 0, handled_messages: [] };
   }
-  return JSON.parse(readFileSync(RUNTIME_STATE_PATH, 'utf8'));
+  try {
+    const raw = readFileSync(RUNTIME_STATE_PATH, 'utf8')
+      .replace(/^\uFEFF/, '')
+      .replace(/\u0000/g, '')
+      .trim();
+    if (!raw) return { application_next_seq: 0, participant_next_seq: 0, handled_messages: [] };
+    return JSON.parse(raw);
+  } catch (error) {
+    throw new Error(`runtime state is corrupted; stop duplicate loops and restore ${RUNTIME_STATE_PATH}: ${error.message}`);
+  }
 }
 
 function writeRuntimeState(next) {
-  writeFileSync(RUNTIME_STATE_PATH, `${JSON.stringify(next, null, 2)}\n`);
+  const tempPath = `${RUNTIME_STATE_PATH}.${process.pid}.tmp`;
+  writeFileSync(tempPath, `${JSON.stringify(next, null, 2)}\n`);
+  renameSync(tempPath, RUNTIME_STATE_PATH);
 }
 
 function writeArgsFile(name, payload) {
