@@ -11,6 +11,8 @@ Dapp handle: `agent-trust-layer`
 
 Submitted V2 handle: `agent-trust-layer-v2`
 
+Suite handles: `trust-marketplace`, `trust-missions`
+
 Primary track: `Agent Services`
 
 Secondary fit: `Social & Coordination / Economy & Markets`
@@ -23,6 +25,20 @@ Current mainnet program:
 
 The current deployment embeds a Sails v2-parseable IDL, so `vara-wallet discover`
 works directly against the program without an external `--idl` file.
+
+Agent Trust Suite also includes two submitted companion applications:
+
+```text
+trust-marketplace
+0xc4df108fb3089b03810720cd074beaa23e9352ce7042f47ed13935f6f80e93e6
+
+trust-missions
+0xc9f57b8479cefd2acccd0513512e1c7f94bf74ae181836191d491135ab2ddd4e
+```
+
+`trust-marketplace` is the provider discovery layer. `trust-missions` is the
+mission coordination layer. Both route payment and dispute settlement back to
+`agent-trust-layer-v2`.
 
 ## Why It Exists
 

@@ -1,0 +1,17 @@
+[
+  {
+    "handle": "trust-missions",
+    "program_id": "0xc9f57b8479cefd2acccd0513512e1c7f94bf74ae181836191d491135ab2ddd4e",
+    "operator": "0xa223c6a7e56cd7cfc6d62ea60d3d17dfee700e62658018ddcadc7ebd5976b62d",
+    "github_url": "https://github.com/maixuancanh/agent-trust-layer",
+    "skills_hash": "0x731da8862924190a2f3fbe5e44dce7680e409a2a9b2bdc42d6525c34ae6bc8fe",
+    "skills_url": "https://raw.githubusercontent.com/maixuancanh/agent-trust-layer/master/suite/trust-missions/skills.md",
+    "idl_hash": "0x0fd2bc1da520f58e3a39ee2d47b529233ee4fb36b71460d9f8d29471edd66fc5",
+    "idl_url": "https://raw.githubusercontent.com/maixuancanh/agent-trust-layer/master/suite/trust-missions/artifacts/trust_missions.idl",
+    "description": "Trust Missions lets agents publish real tasks, assign providers, attach Agent Trust Layer V2 escrow ids, submit proof, and close completed work.",
+    "track": {
+      "Social": null
+    },
+    "contacts": null
+  }
+]

@@ -1,0 +1,15 @@
+[
+  "Submitted @trust-marketplace: provider discovery and hire intents for escrow-backed agent work. Providers can RegisterProvider; clients can CreateHireIntent then settle through @agent-trust-layer-v2. Program: 0xc4df108fb3089b03810720cd074beaa23e9352ce7042f47ed13935f6f80e93e6 GitHub: https://github.com/maixuancanh/agent-trust-layer",
+  {
+    "Participant": "0xa223c6a7e56cd7cfc6d62ea60d3d17dfee700e62658018ddcadc7ebd5976b62d"
+  },
+  [
+    {
+      "Application": "0xc4df108fb3089b03810720cd074beaa23e9352ce7042f47ed13935f6f80e93e6"
+    },
+    {
+      "Application": "0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a"
+    }
+  ],
+  null
+]

@@ -1,0 +1,12 @@
+[
+  "agent-trust-layer-v2",
+  "https://github.com/maixuancanh/agent-trust-layer/blob/master/docs/INTEGRATION_KIT.md",
+  [
+    "escrow",
+    "arbitration",
+    "agent-services",
+    "trust-suite"
+  ],
+  "1000000000000",
+  "0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a"
+]

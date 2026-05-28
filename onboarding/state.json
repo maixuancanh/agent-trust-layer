@@ -228,6 +228,96 @@
     "create_escrow_dry_run": "ok_with_embedded_idl_and_explicit_gas_limit",
     "create_escrow_estimate_note": "vara-wallet currently returns INTERNAL_ERROR code.startsWith is not a function on --estimate for this payable method; integration kit uses --dry-run plus explicit --gas-limit 2000000000 instead."
   },
+  "agent_trust_suite": {
+    "strategy": "One real operator, multiple related applications. No fake companion agents, no self-funded traffic loops.",
+    "core": {
+      "handle": "agent-trust-layer-v2",
+      "program_id": "0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a",
+      "role": "funded escrow, proof, approval, dispute resolution, withdrawals"
+    },
+    "trust_marketplace": {
+      "handle": "trust-marketplace",
+      "program_id": "0xc4df108fb3089b03810720cd074beaa23e9352ce7042f47ed13935f6f80e93e6",
+      "track": "Services",
+      "status": "Submitted",
+      "skills_hash": "0x7cf73535322d3b683bca6618c90c3e4bb27a89e13e495fc32dd7aff9c454c48f",
+      "idl_hash": "0xdd331e472e3accab59cfb1691b354b28ce34c5784785688c1caa2e37c79cc507",
+      "register_application": {
+        "tx_hash": "0x2a427abfcc407fa8e502ba77377b7029b7b3ae4dbf17b300a1e54a48ca1722db",
+        "block_number": 33339468,
+        "message_id": "0xa7b2013b8508c548f1a502b7f1b398be8a197840a9d93bf62d7c0caeeb15e10d"
+      },
+      "submit_application": {
+        "tx_hash": "0xa39ab6f48c031c2576c6b7bb96fcec00ab39ffd2d3f5e71a84ccd895b9ad606f",
+        "block_number": 33339486,
+        "message_id": "0x9a12cf6453e6e782870de7247a3ba323430ac9f434311c7c5f3d5940ab652ba4"
+      },
+      "identity_card": {
+        "tx_hash": "0xd74a385d958b5e05512d4f60c0d6a3122ed2f0967a5d0d30925ba783ceeb9938",
+        "block_number": 33339499,
+        "message_id": "0x0ff849a02237d7675364f341281fae30ab65e7fb6ec909074e279bab58b2e4f1"
+      },
+      "board_announcement": {
+        "id": 333,
+        "tx_hash": "0x37f0dc77f6d16cdc1870860f2bf387f4fd3400d1c1a5c2c0021aac096d801229",
+        "block_number": 33339522,
+        "message_id": "0xa27c3a7c7b51fc03e45f8df6f9eb601ba06352c7673c4573f846df2243efdaee"
+      },
+      "chat_notice": {
+        "id": 2823,
+        "tx_hash": "0x9f69e004f15e3ffd8bf51e5accc620dbf34f6da4d94ce202119287bc2cb0c06b",
+        "block_number": 33339572,
+        "message_id": "0xdf0ce6d6b9158e7a6d71694131bd802e664dc3c760745aa3b5acaa34ab8cca33"
+      },
+      "smoke": {
+        "register_provider_tx_hash": "0x82f00489fbf0882e04f918e56bc362c2b75ee42e49768e75bdb6cc464c86e136",
+        "register_provider_block_number": 33339646,
+        "list_providers": "ok",
+        "create_hire_intent_note": "Self-hire is intentionally rejected by InvalidProvider; real hire intents require a different provider wallet to register first."
+      }
+    },
+    "trust_missions": {
+      "handle": "trust-missions",
+      "program_id": "0xc9f57b8479cefd2acccd0513512e1c7f94bf74ae181836191d491135ab2ddd4e",
+      "track": "Social",
+      "status": "Submitted",
+      "skills_hash": "0x731da8862924190a2f3fbe5e44dce7680e409a2a9b2bdc42d6525c34ae6bc8fe",
+      "idl_hash": "0x0fd2bc1da520f58e3a39ee2d47b529233ee4fb36b71460d9f8d29471edd66fc5",
+      "register_application": {
+        "tx_hash": "0xdede6212ee4d81cd24f5b7dbebeec0d3245361dab3d6d2910348bef38e60179f",
+        "block_number": 33339474,
+        "message_id": "0x918fb620f9e0bf8588eb384895d77fae80b8a89e03202bf2c5fff11d5fee5c51"
+      },
+      "submit_application": {
+        "tx_hash": "0x07952d6340e8262e16a6e8e8b5141000bad5851dc856c69f55714a1005d5cea9",
+        "block_number": 33339492,
+        "message_id": "0x2323ea256fe8a9be7013c8348a65a174ebc8b821285d5c6c4cf3381472c58c9f"
+      },
+      "identity_card": {
+        "tx_hash": "0xb623f30a4c1fbb3258c3a504aa18f1c5f40b51745d70472495f28c14283d387f",
+        "block_number": 33339506,
+        "message_id": "0x4ef30524a290b2ab7d898c94690cfcd8e27deb5d49a0be66feaaf61787f58cb0"
+      },
+      "board_announcement": {
+        "id": 334,
+        "tx_hash": "0xc52b801fa361858208cff8fd4f4dd40ee9c3f24b3a74a116f435e85f1cb2e9a1",
+        "block_number": 33339541,
+        "message_id": "0xc01124813e1bde46b23a5fd7885d3a8dadd452706c591c2ed5a103a0b8abb63f"
+      },
+      "chat_notice": {
+        "id": 2824,
+        "tx_hash": "0x7333835674f422bef418175d752ada5811f8546cad404fc6ff87d0efb836556d",
+        "block_number": 33339594,
+        "message_id": "0x70370d2c3d8871bde24a91be614721920ba23a1390bbd74993b88fea052dcc98"
+      },
+      "smoke": {
+        "create_mission_tx_hash": "0x56cc41f59f075e353ce796ee2f3412fa6661e2d9396e8495b2604afab58029ef",
+        "create_mission_block_number": 33339679,
+        "mission_id": 0,
+        "list_missions": "ok"
+      }
+    }
+  },
   "hashes": {
     "skills_hash": "0x093236fa797a2a30218f1fca99df5280db8db184a6643712a7545cd9df88ba1c",
     "idl_hash": "0x42caf28234e233a9026679f8e617a591c13d195c124adb4cd28acf8a0ffe76a8"

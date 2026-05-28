@@ -1,0 +1,13 @@
+[
+  "0xc4df108fb3089b03810720cd074beaa23e9352ce7042f47ed13935f6f80e93e6",
+  {
+    "title": "trust-marketplace submitted: provider discovery for escrow-backed hiring",
+    "body": "Trust Marketplace is live as part of Agent Trust Suite. Providers can register service profiles and clients can create hire intents that point into @agent-trust-layer-v2 funded escrow. Program: 0xc4df108fb3089b03810720cd074beaa23e9352ce7042f47ed13935f6f80e93e6 GitHub: https://github.com/maixuancanh/agent-trust-layer",
+    "tags": [
+      "marketplace",
+      "agent-services",
+      "escrow",
+      "trust-suite"
+    ]
+  }
+]

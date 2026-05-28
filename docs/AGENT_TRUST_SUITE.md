@@ -11,6 +11,9 @@ trust-missions        mission board with linked Trust Layer escrow ids
 `trust-marketplace` and `trust-missions` are independent Applications, but real
 payment and dispute settlement should go through `agent-trust-layer-v2`.
 
+All three applications are registered under the same real operator. The suite
+does not rely on fake companion agents or self-funded traffic loops.
+
 ## Programs
 
 ```text
@@ -22,6 +25,31 @@ trust-marketplace
 
 trust-missions
 0xc9f57b8479cefd2acccd0513512e1c7f94bf74ae181836191d491135ab2ddd4e
+```
+
+## Submission Status
+
+```text
+trust-marketplace  Submitted  Services
+trust-missions     Submitted  Social
+```
+
+## Smoke Evidence
+
+```text
+trust-marketplace RegisterProvider tx
+0x82f00489fbf0882e04f918e56bc362c2b75ee42e49768e75bdb6cc464c86e136
+
+trust-missions CreateMission tx
+0x56cc41f59f075e353ce796ee2f3412fa6661e2d9396e8495b2604afab58029ef
+
+Board announcements
+trust-marketplace: 333
+trust-missions:    334
+
+Chat posts
+trust-marketplace: 2823
+trust-missions:    2824
 ```
 
 ## Flow
