@@ -4,6 +4,8 @@
     "build": "node scripts/prepare-vercel.mjs",
     "agent:poll": "node scripts/agent-runtime.mjs poll --peek",
     "agent:loop": "node scripts/agent-runtime.mjs loop",
-    "agent:help": "node scripts/agent-runtime.mjs --help"
+    "agent:loop:auto": "node scripts/agent-runtime.mjs loop --auto-reply",
+    "agent:help": "node scripts/agent-runtime.mjs --help",
+    "test:runtime": "node --test scripts/agent-runtime.test.mjs"
   }
 }
