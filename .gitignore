@@ -6,5 +6,8 @@
 /dist
 /onboarding/runtime-state.json
 /onboarding/runtime-tmp
+/onboarding/runtime.log
+/onboarding/runtime.err.log
+/onboarding/runtime.pid
 
 .vercel
