@@ -1,28 +1,46 @@
 fn main() {
     // Build WASM
     if let Some((_, wasm_path)) = sails_rs::build_wasm() {
-        // Generate IDL and embed it into WASM
+        let previous_no_embed = std::env::var_os("SAILS_NO_EMBED_IDL");
+        // Build scripts run single-threaded here; the env override prevents Sails
+        // from embedding the raw IDL before we add the v2 parser annotations.
+        unsafe {
+            std::env::set_var("SAILS_NO_EMBED_IDL", "1");
+        }
         sails_rs::ClientBuilder::<::agent_trust_layer_app::Program>::from_wasm_path(&wasm_path)
             .build_idl();
+        restore_no_embed(previous_no_embed);
 
-        let program_name = wasm_path
-            .file_name()
-            .expect("wasm path has file name")
-            .to_string_lossy()
-            .split('.')
-            .next()
-            .expect("wasm file has stem")
-            .to_string();
-        let idl_path = wasm_path.with_file_name(program_name).with_extension("idl");
+        let idl_path = wasm_path
+            .with_file_name(wasm_path.file_stem().expect("wasm path has file stem"))
+            .with_extension("idl");
         let idl = std::fs::read_to_string(&idl_path).expect("read generated IDL");
-        let patched = idl.replacen(
+        let patched = patch_idl_for_validation(&idl);
+        std::fs::write(&idl_path, &patched).expect("write patched IDL");
+        sails_rs::embed_idl_to_file(&wasm_path, &patched).expect("embed patched IDL in WASM");
+    }
+}
+
+fn restore_no_embed(previous: Option<std::ffi::OsString>) {
+    unsafe {
+        match previous {
+            Some(value) => std::env::set_var("SAILS_NO_EMBED_IDL", value),
+            None => std::env::remove_var("SAILS_NO_EMBED_IDL"),
+        }
+    }
+}
+
+fn patch_idl_for_validation(idl: &str) -> String {
+    let patched = if idl.contains("@partial\nservice AgentTrustLayer@") {
+        idl.to_owned()
+    } else {
+        idl.replacen(
             "service AgentTrustLayer@",
             "@partial\nservice AgentTrustLayer@",
             1,
-        );
-        let patched = add_entry_ids(&patched);
-        std::fs::write(&idl_path, patched).expect("write patched IDL");
-    }
+        )
+    };
+    add_entry_ids(&patched)
 }
 
 fn add_entry_ids(idl: &str) -> String {

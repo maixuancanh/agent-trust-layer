@@ -6,7 +6,7 @@ import {
   shouldAutoReply,
 } from './agent-runtime.mjs';
 
-const PROGRAM_ID = '0x8a2ec7efc5ca775b531f042fe2d8da67e8b46e786044cb5f375084c8a88f797f';
+const PROGRAM_ID = '0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a';
 
 const baseOptions = {
   appHandle: 'agent-trust-layer',

@@ -9,6 +9,7 @@
     "kit:campaign": "node scripts/integration-kit.mjs campaign-message",
     "kit:help": "node scripts/integration-kit.mjs --help",
     "test:runtime": "node --test scripts/agent-runtime.test.mjs",
-    "test:integration": "node --test scripts/integration-kit.test.mjs"
+    "test:integration": "node --test scripts/integration-kit.test.mjs",
+    "test:idl": "node --test scripts/idl-patch.test.mjs"
   }
 }

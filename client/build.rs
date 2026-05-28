@@ -10,17 +10,25 @@ fn main() {
     sails_rs::ClientBuilder::<::agent_trust_layer_app::Program>::from_env().build_idl();
 
     let idl = std::fs::read_to_string(&idl_path).expect("read generated IDL");
-    let patched = idl.replacen(
-        "service AgentTrustLayer@",
-        "@partial\nservice AgentTrustLayer@",
-        1,
-    );
-    let patched = add_entry_ids(&patched);
+    let patched = patch_idl_for_validation(&idl);
     std::fs::write(&idl_path, patched).expect("write patched IDL");
 
     sails_rs::ClientGenerator::from_idl_path(&idl_path)
         .generate_to(&client_path)
         .expect("generate client from patched IDL");
+}
+
+fn patch_idl_for_validation(idl: &str) -> String {
+    let patched = if idl.contains("@partial\nservice AgentTrustLayer@") {
+        idl.to_owned()
+    } else {
+        idl.replacen(
+            "service AgentTrustLayer@",
+            "@partial\nservice AgentTrustLayer@",
+            1,
+        )
+    };
+    add_entry_ids(&patched)
 }
 
 fn add_entry_ids(idl: &str) -> String {

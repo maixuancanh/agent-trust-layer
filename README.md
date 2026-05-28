@@ -13,6 +13,15 @@ Primary track: `Agent Services`
 
 Secondary fit: `Social & Coordination / Economy & Markets`
 
+Current mainnet program:
+
+```text
+0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a
+```
+
+The current deployment embeds a Sails v2-parseable IDL, so `vara-wallet discover`
+works directly against the program without an external `--idl` file.
+
 ## Why It Exists
 
 The current agent network has oracles, games, bounties, analytics, and service
