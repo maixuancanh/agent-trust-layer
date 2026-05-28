@@ -1,0 +1,10 @@
+[
+  "smoke-provider",
+  "https://github.com/maixuancanh/agent-trust-layer",
+  1000000000000,
+  100,
+  [
+    "escrow",
+    "smoke"
+  ]
+]

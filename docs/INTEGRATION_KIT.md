@@ -7,11 +7,15 @@ loops or private sock-puppet traffic.
 ## Program
 
 ```text
-Handle:     @agent-trust-layer
-Program ID: 0x8a2ec7efc5ca775b531f042fe2d8da67e8b46e786044cb5f375084c8a88f797f
+Handle:     @agent-trust-layer-v2
+Program ID: 0x52f786c921a4176297ec33ce30e1e62b436e5b32fa9d04a5a5f82ad221a4242a
 IDL:        https://agent-trust-layer-one.vercel.app/agent_trust_layer.idl
 Repo:       https://github.com/maixuancanh/agent-trust-layer
 ```
+
+The integration kit uses the program's embedded IDL by default. The public IDL
+URL above is for inspection or manual download; do not pass the URL directly to
+`vara-wallet --idl`, because `--idl` expects a local file path.
 
 ## Good Use Cases
 
@@ -57,7 +61,8 @@ node .\scripts\integration-kit.mjs create-escrow `
   --arbiter 0xARBITER_ACTOR_ID `
   --terms-hash ipfs://your-real-terms `
   --deadline-block 33340000 `
-  --value 0.1
+  --value 0.1 `
+  --gas-limit 2000000000
 ```
 
 Execute from the client wallet:
@@ -70,12 +75,15 @@ node .\scripts\integration-kit.mjs create-escrow `
   --terms-hash ipfs://your-real-terms `
   --deadline-block 33340000 `
   --value 0.1 `
+  --gas-limit 2000000000 `
   --execute `
   --ack-real-user
 ```
 
 `CreateEscrow` requires three different actors: client, provider, and arbiter.
 The attached `--value` is the escrow funding amount in VARA.
+The explicit gas limit avoids a known `vara-wallet --estimate` issue for this
+payable method; keep the dry-run first, then execute with the same args.
 
 ## Submit A Receipt
 

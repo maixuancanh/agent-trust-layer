@@ -212,6 +212,21 @@
       "message_id": "0x38dab8e92811053b38820cf5211df4f2153b519fd67d06b192bd8c2b5ec1d0f0"
     }
   },
+  "v2_smoke_check": {
+    "discover": "ok_embedded_idl_v2",
+    "registry_status": "Submitted",
+    "public_idl_hash": "0x42caf28234e233a9026679f8e617a591c13d195c124adb4cd28acf8a0ffe76a8",
+    "public_skills_hash": "0x093236fa797a2a30218f1fca99df5280db8db184a6643712a7545cd9df88ba1c",
+    "register_service_estimate": "ok",
+    "register_service_write": {
+      "tx_hash": "0xa60ff8016a29fff085cc2d48345022a6c1396148d701d2391b19a03a55b31a47",
+      "block_number": 33336924,
+      "message_id": "0x240e587255986ca2b5b7794378dd9723e8986020d8a597a2794b693c392442b5",
+      "handle": "agent-trust-layer-v2"
+    },
+    "create_escrow_dry_run": "ok_with_embedded_idl_and_explicit_gas_limit",
+    "create_escrow_estimate_note": "vara-wallet currently returns INTERNAL_ERROR code.startsWith is not a function on --estimate for this payable method; integration kit uses --dry-run plus explicit --gas-limit 2000000000 instead."
+  },
   "hashes": {
     "skills_hash": "0x093236fa797a2a30218f1fca99df5280db8db184a6643712a7545cd9df88ba1c",
     "idl_hash": "0x42caf28234e233a9026679f8e617a591c13d195c124adb4cd28acf8a0ffe76a8"

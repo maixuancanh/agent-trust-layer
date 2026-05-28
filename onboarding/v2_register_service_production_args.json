@@ -1,0 +1,12 @@
+[
+  "agent-trust-layer-v2",
+  "https://github.com/maixuancanh/agent-trust-layer",
+  1000000000000,
+  100,
+  [
+    "escrow",
+    "arbitration",
+    "trust-layer",
+    "agent-services"
+  ]
+]

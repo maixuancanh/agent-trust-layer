@@ -12,7 +12,7 @@ const state = existsSync(STATE_PATH) ? JSON.parse(readFileSync(STATE_PATH, 'utf8
 const DEFAULT_PROGRAM_ID =
   state?.deployed_program?.program_id ||
   '0x8a2ec7efc5ca775b531f042fe2d8da67e8b46e786044cb5f375084c8a88f797f';
-const DEFAULT_IDL = state?.published_artifacts?.idl_url || join(ROOT, 'artifacts', 'agent_trust_layer.idl');
+const DEFAULT_IDL = null;
 const REPO_URL = state.repo_url || 'https://github.com/maixuancanh/agent-trust-layer';
 
 function usage() {
@@ -36,7 +36,8 @@ Common write flags:
   --execute               Send the transaction instead of --dry-run.
   --ack-real-user         Required with --execute; confirms this is not a self-funded loop.
   --program-id HEX        Override Agent Trust Layer program id.
-  --idl PATH_OR_URL       Override IDL path or URL.
+  --idl PATH              Override IDL with a local file path. By default the CLI uses embedded IDL.
+  --gas-limit N           Override explicit gas limit. CreateEscrow defaults to 2000000000.
 
 Examples:
   node scripts/integration-kit.mjs register-service --handle my-agent --metadata-uri https://example.com/service.json --price-raw 1000000000000 --sla-blocks 1200 --tags mission,escrow
@@ -114,6 +115,7 @@ export function buildWalletCommand({
   execute = false,
   value = null,
   units = null,
+  gasLimit = null,
 }) {
   if (execute && !account) {
     throw new Error('--account is required with --execute');
@@ -129,10 +131,10 @@ export function buildWalletCommand({
     method,
     '--args-file',
     argsFile,
-    '--idl',
-    idl,
+    ...(idl ? ['--idl', idl] : []),
     ...(value ? ['--value', value] : []),
     ...(units ? ['--units', units] : []),
+    ...(gasLimit ? ['--gas-limit', gasLimit] : []),
     ...(!execute ? ['--dry-run'] : []),
   ];
 
@@ -217,6 +219,7 @@ function createEscrow(args) {
     argsFile,
     value: argValue(args, '--value', '0.1'),
     units: argValue(args, '--units', null),
+    gasLimit: argValue(args, '--gas-limit', '2000000000'),
   });
   printPrepared({ command, argsFile, execute: context.execute });
   if (context.execute) console.log(runWalletCommand(command));

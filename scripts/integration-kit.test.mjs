@@ -61,6 +61,7 @@ describe('integration kit command builders', () => {
     assert.ok(command.includes('--dry-run'));
     assert.ok(command.includes(PROGRAM_ID));
     assert.ok(command.includes('AgentTrustLayer/RegisterService'));
+    assert.ok(!command.includes('--idl https://'));
   });
 
   it('requires an account when execute mode is requested', () => {
@@ -74,6 +75,21 @@ describe('integration kit command builders', () => {
         }),
       /--account is required/,
     );
+  });
+
+  it('adds an explicit gas limit for CreateEscrow to avoid wallet estimate issues', () => {
+    const command = buildWalletCommand({
+      method: 'AgentTrustLayer/CreateEscrow',
+      argsFile: 'tmp/escrow.json',
+      programId: PROGRAM_ID,
+      value: '0.1',
+      gasLimit: '2000000000',
+      execute: false,
+    });
+
+    assert.ok(command.includes('--gas-limit 2000000000'));
+    assert.ok(command.includes('--value 0.1'));
+    assert.ok(command.includes('--dry-run'));
   });
 });
 
