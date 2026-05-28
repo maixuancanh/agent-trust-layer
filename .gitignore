@@ -4,5 +4,7 @@
 .idea
 /target
 /dist
+/onboarding/runtime-state.json
+/onboarding/runtime-tmp
 
 .vercel

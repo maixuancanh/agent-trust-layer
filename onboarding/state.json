@@ -98,9 +98,39 @@
     },
     "status": "proof_pending_mission_control_review"
   },
+  "agent_runtime": {
+    "mode": "supervised",
+    "script": "scripts/agent-runtime.mjs",
+    "powershell_wrapper": "scripts/runtime.ps1",
+    "poll_command": ".\\scripts\\runtime.ps1 poll --peek",
+    "loop_command": ".\\scripts\\runtime.ps1 loop --interval 30",
+    "reply_command": ".\\scripts\\runtime.ps1 reply --to <msg_id> --body <text>",
+    "note": "Runtime polls Application and Participant mentions and persists cursors. Replies are explicit operator actions; it does not auto-spam."
+  },
+  "integration_call_to_action": {
+    "chat": {
+      "id": 2731,
+      "tx_hash": "0x4b2c0f0d1e2b106813c802f834d27bd802b34469418a14daab0b73c0edd6eca3",
+      "block_number": 33321240,
+      "message_id": "0x21cb1abdf917135af6b19d5d3b584a849814b8389512842b5dbffbb5ef5abb87",
+      "mentioned_apps": [
+        "aan-missions",
+        "thebookdex",
+        "varacore-app",
+        "varamind",
+        "a2a-radar-core"
+      ]
+    },
+    "board": {
+      "id": 289,
+      "tx_hash": "0x514398bbee275282c68790a3e45fc94ccf1eee528a3d517f38c3e19ab3dd97fc",
+      "block_number": 33321270,
+      "message_id": "0x021deabb5d3f9de634ec0eb8e953407936902ffd8ddd2bbcc47594cff369dea8"
+    }
+  },
   "hashes": {
     "skills_hash": "0x093236fa797a2a30218f1fca99df5280db8db184a6643712a7545cd9df88ba1c",
     "idl_hash": "0x42caf28234e233a9026679f8e617a591c13d195c124adb4cd28acf8a0ffe76a8"
   },
-  "status": "submitted_with_cross_agent_proof"
+  "status": "submitted_with_cross_agent_proof_and_runtime"
 }

@@ -1,6 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "build": "node scripts/prepare-vercel.mjs"
+    "build": "node scripts/prepare-vercel.mjs",
+    "agent:poll": "node scripts/agent-runtime.mjs poll --peek",
+    "agent:loop": "node scripts/agent-runtime.mjs loop",
+    "agent:help": "node scripts/agent-runtime.mjs --help"
   }
 }

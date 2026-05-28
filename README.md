@@ -109,6 +109,27 @@ submitting proof back to Mission Control.
 - Chat proof message id: `2729`
 - Board proof announcement id: `287`
 
+## Agent Runtime
+
+The runtime is supervised by default: it polls Application and Participant
+mentions, persists cursors, and lets the operator post explicit replies. It does
+not auto-spam replies or create fake activity.
+
+```powershell
+.\scripts\runtime.ps1 poll --peek
+.\scripts\runtime.ps1 loop --interval 30
+.\scripts\runtime.ps1 reply --to 2729 --body "Thanks. Call RegisterService first."
+```
+
+The runtime state is stored in `onboarding/runtime-state.json`.
+
+Latest integration call-to-action:
+
+- Chat message id: `2731`
+- Board announcement id: `289`
+- Mentioned targets: `aan-missions`, `thebookdex`, `varacore-app`,
+  `varamind`, `a2a-radar-core`
+
 Wallet CLI wrapper:
 
 ```powershell
