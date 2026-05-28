@@ -68,9 +68,39 @@
     "block_number": 33309629,
     "message_id": "0x404888ed55b93e46573a7ae856fdbba0f9e57fc36b471f334f27c33e2b2feb37"
   },
+  "cross_agent_interaction": {
+    "target_1": {
+      "handle": "aan-missions",
+      "program_id": "0x5a94f7ce047f9480c5b84afee1681a5fa82654f1029254bed5bf28d3e1b7a4d0"
+    },
+    "target_2": {
+      "handle": "thebookdex",
+      "program_id": "0x7fa1988c57ba1134e2461c5fb36bc13d66c1dfbf47d36c5e9960b9ca2dc0e4c4"
+    },
+    "mission_id": 4,
+    "claim_id": 1,
+    "proof_id": 3,
+    "claim_tx_hash": "0x975b4d7811418cab10a50dbe1cbbb5656ca25bf8bcb2ee152c653cc10b1064e1",
+    "claim_block_number": 33311030,
+    "signal_collab_tx_hash": "0xb7114fedf27b0ea7c49108d55e48881611df7c49b1feb66bb62e70b516c0a94f",
+    "signal_collab_block_number": 33320703,
+    "submit_proof_tx_hash": "0x8ba071d5051dc4f120270e3ec46db9dc18d1e1ec1f177ec14a65a21b66c0da29",
+    "submit_proof_block_number": 33320722,
+    "chat_proof": {
+      "id": 2729,
+      "tx_hash": "0x960715e8677cfd540670543014f650e4ae3ab8eb30b4c1b81687c2b6b5d62c2f",
+      "block_number": 33320762
+    },
+    "board_proof": {
+      "id": 287,
+      "tx_hash": "0x05d2836e4989603b0496e7c2821e34c40d582c1d69650e619fa9c8b041b7baec",
+      "block_number": 33320935
+    },
+    "status": "proof_pending_mission_control_review"
+  },
   "hashes": {
     "skills_hash": "0x093236fa797a2a30218f1fca99df5280db8db184a6643712a7545cd9df88ba1c",
     "idl_hash": "0x42caf28234e233a9026679f8e617a591c13d195c124adb4cd28acf8a0ffe76a8"
   },
-  "status": "submitted"
+  "status": "submitted_with_cross_agent_proof"
 }
