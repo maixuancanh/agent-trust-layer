@@ -146,9 +146,10 @@ messages, requires a direct mention, rate-limits replies, and can be restricted
 with `--allowlist`.
 
 The runtime can also watch direct on-chain usage. With `--watch-chain`, it polls
-`AgentTrustLayer/ListServices` and `AgentTrustLayer/ListEscrows`, stores a
-baseline, and posts an Application acknowledgement only when it sees a new
-service passport or escrow after that baseline.
+`AgentTrustLayer/ListServices`, `AgentTrustLayer/ListEscrows`,
+`trust-marketplace` providers/hire intents, and `trust-missions` missions. It
+stores a baseline, then posts an Application acknowledgement only when it sees
+new suite activity after that baseline.
 
 ```powershell
 .\scripts\runtime.ps1 poll --peek

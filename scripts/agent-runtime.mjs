@@ -18,6 +18,10 @@ const pid = state.vara_agents_program_id;
 const voucher = state.voucher_id;
 const idl = join(process.env.USERPROFILE, '.agents', 'skills', 'vara-agent-network-skills', 'idl', 'agents_network_client.idl');
 const trustLayerIdl = join(ROOT, 'artifacts', 'agent_trust_layer.idl');
+const trustMarketplacePid = state.agent_trust_suite?.trust_marketplace?.program_id;
+const trustMarketplaceIdl = join(ROOT, 'suite', 'trust-marketplace', 'artifacts', 'trust_marketplace.idl');
+const trustMissionsPid = state.agent_trust_suite?.trust_missions?.program_id;
+const trustMissionsIdl = join(ROOT, 'suite', 'trust-missions', 'artifacts', 'trust_missions.idl');
 const indexerGraphqlUrl = process.env.INDEXER_GRAPHQL_URL || 'https://agents.vara.network/api/agents/graphql';
 const defaultAllowlist = [
   'aan-tv',
@@ -232,6 +236,12 @@ export function detectOnChainChanges(snapshot = {}, runtime = {}) {
 
   const seenServices = new Set((runtime.seen_service_keys || []).map(String));
   const seenEscrows = new Set((runtime.seen_escrow_ids || []).map((item) => Number(item)));
+  const hasMarketplaceProviderBaseline = Array.isArray(runtime.seen_marketplace_provider_keys);
+  const hasMarketplaceHireIntentBaseline = Array.isArray(runtime.seen_marketplace_hire_intent_ids);
+  const hasMissionBaseline = Array.isArray(runtime.seen_mission_keys);
+  const seenMarketplaceProviders = new Set((runtime.seen_marketplace_provider_keys || []).map(String));
+  const seenMarketplaceHireIntents = new Set((runtime.seen_marketplace_hire_intent_ids || []).map((item) => Number(item)));
+  const seenMissions = new Set((runtime.seen_mission_keys || []).map(String));
   const serviceChanges = (snapshot.serviceKeys || [])
     .map(String)
     .filter((key) => key && !seenServices.has(key))
@@ -240,8 +250,32 @@ export function detectOnChainChanges(snapshot = {}, runtime = {}) {
     .map((id) => Number(id))
     .filter((id) => Number.isFinite(id) && !seenEscrows.has(id))
     .map((id) => ({ kind: 'escrow', id }));
+  const marketplaceProviderChanges = hasMarketplaceProviderBaseline
+    ? (snapshot.marketplaceProviderKeys || [])
+        .map(String)
+        .filter((key) => key && !seenMarketplaceProviders.has(key))
+        .map((key) => ({ kind: 'marketplace_provider', key }))
+    : [];
+  const marketplaceHireIntentChanges = hasMarketplaceHireIntentBaseline
+    ? (snapshot.marketplaceHireIntentIds || [])
+        .map((id) => Number(id))
+        .filter((id) => Number.isFinite(id) && !seenMarketplaceHireIntents.has(id))
+        .map((id) => ({ kind: 'marketplace_hire_intent', id }))
+    : [];
+  const missionChanges = hasMissionBaseline
+    ? (snapshot.missionKeys || [])
+        .map(String)
+        .filter((key) => key && !seenMissions.has(key))
+        .map((key) => ({ kind: 'mission', key }))
+    : [];
 
-  return [...serviceChanges, ...escrowChanges];
+  return [
+    ...serviceChanges,
+    ...escrowChanges,
+    ...marketplaceProviderChanges,
+    ...marketplaceHireIntentChanges,
+    ...missionChanges,
+  ];
 }
 
 export function buildOnChainAck(change, options = {}) {
@@ -251,6 +285,16 @@ export function buildOnChainAck(change, options = {}) {
   }
   if (change.kind === 'escrow') {
     return `Detected new CreateEscrow on @agent-trust-layer-v2: escrow #${change.id}. Provider can AcceptEscrow, SubmitWork with proof_uri, then client can ApproveWork or open dispute. Program: ${merged.appHex}`;
+  }
+  if (change.kind === 'marketplace_provider') {
+    return `Detected new provider on @trust-marketplace: ${change.key}. Next step: create a real hire intent, then settle payment through @agent-trust-layer-v2. Program: ${trustMarketplacePid}`;
+  }
+  if (change.kind === 'marketplace_hire_intent') {
+    return `Detected @trust-marketplace hire intent #${change.id}. To complete the workflow, fund the matched work through @agent-trust-layer-v2 CreateEscrow. Program: ${trustMarketplacePid}`;
+  }
+  if (change.kind === 'mission') {
+    const missionId = String(change.key).split(':')[0];
+    return `Detected @trust-missions activity for mission #${missionId}: ${change.key}. Use @agent-trust-layer-v2 escrow_id on assignment, then SubmitMissionProof when work is done. Program: ${trustMissionsPid}`;
   }
   return `Detected new Agent Trust Layer activity. Program: ${merged.appHex}`;
 }
@@ -361,18 +405,22 @@ function postChat(body, replyTo, mentions = [], author = handleRef('Participant'
 }
 
 function trustLayerQuery(method, payload = []) {
-  const argsFile = writeArgsFile(`trust-layer-${method.toLowerCase()}`, payload);
+  return sailsQuery(appHex, trustLayerIdl, `AgentTrustLayer/${method}`, payload, `trust-layer-${method.toLowerCase()}`);
+}
+
+function sailsQuery(programId, idlPath, methodPath, payload = [], name = 'query') {
+  const argsFile = writeArgsFile(name, payload);
   return walletJson([
     '--network',
     network,
     '--json',
     'call',
-    appHex,
-    `AgentTrustLayer/${method}`,
+    programId,
+    methodPath,
     '--args-file',
     argsFile,
     '--idl',
-    trustLayerIdl,
+    idlPath,
   ]).result;
 }
 
@@ -386,12 +434,63 @@ function escrowId(escrow) {
   return Number(escrow.id ?? escrow.escrow_id ?? escrow[0]);
 }
 
+function marketplaceProviderKey(provider) {
+  const owner = String(provider.owner || provider[0] || '');
+  const handle = String(provider.handle || provider[1] || '');
+  return `${owner}:${handle}`;
+}
+
+function marketplaceHireIntentId(intent) {
+  return Number(intent.id ?? intent.intent_id ?? intent[0]);
+}
+
+function missionKey(mission) {
+  const id = Number(mission.id ?? mission.mission_id ?? mission[0]);
+  const status = mission.status?.kind || mission.status || mission[11] || 'Unknown';
+  const proof = mission.proof_uri || mission.proofUri || mission[10] || '';
+  const escrow = mission.escrow_id ?? mission.escrowId ?? mission[9] ?? '';
+  return `${id}:${status}:${proof}:${escrow}`;
+}
+
 function snapshotTrustLayer() {
   const services = trustLayerQuery('ListServices', []);
   const escrows = trustLayerQuery('ListEscrows', []);
+  const providers = trustMarketplacePid
+    ? sailsQuery(
+        trustMarketplacePid,
+        trustMarketplaceIdl,
+        'TrustMarketplace/ListProviders',
+        [],
+        'trust-marketplace-list-providers',
+      )
+    : [];
+  const hireIntents = trustMarketplacePid
+    ? sailsQuery(
+        trustMarketplacePid,
+        trustMarketplaceIdl,
+        'TrustMarketplace/ListHireIntents',
+        [],
+        'trust-marketplace-list-hire-intents',
+      )
+    : [];
+  const missions = trustMissionsPid
+    ? sailsQuery(
+        trustMissionsPid,
+        trustMissionsIdl,
+        'TrustMissions/ListMissions',
+        [],
+        'trust-missions-list-missions',
+      )
+    : [];
   return {
     serviceKeys: (services || []).map(serviceKey).filter((key) => key !== ':').sort(),
     escrowIds: (escrows || []).map(escrowId).filter((id) => Number.isFinite(id)).sort((a, b) => a - b),
+    marketplaceProviderKeys: (providers || []).map(marketplaceProviderKey).filter((key) => key !== ':').sort(),
+    marketplaceHireIntentIds: (hireIntents || [])
+      .map(marketplaceHireIntentId)
+      .filter((id) => Number.isFinite(id))
+      .sort((a, b) => a - b),
+    missionKeys: (missions || []).map(missionKey).sort(),
   };
 }
 
@@ -426,6 +525,9 @@ function processOnChainWatcher(runtime, args) {
   runtime.onchain_initialized = true;
   runtime.seen_service_keys = snapshot.serviceKeys;
   runtime.seen_escrow_ids = snapshot.escrowIds;
+  runtime.seen_marketplace_provider_keys = snapshot.marketplaceProviderKeys;
+  runtime.seen_marketplace_hire_intent_ids = snapshot.marketplaceHireIntentIds;
+  runtime.seen_mission_keys = snapshot.missionKeys;
   runtime.last_onchain_scan_at = new Date().toISOString();
   if (!dryRun) writeRuntimeState(runtime);
 
