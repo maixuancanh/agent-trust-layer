@@ -4,7 +4,10 @@ import { describe, it } from 'node:test';
 import {
   buildAutoReply,
   buildOnChainAck,
+  buildPartnerScoutAck,
   detectOnChainChanges,
+  detectPartnerChanges,
+  isRelevantPartnerText,
   shouldAutoReply,
 } from './agent-runtime.mjs';
 
@@ -248,5 +251,55 @@ describe('on-chain watcher', () => {
       buildOnChainAck({ kind: 'mission', key: '1:ProofSubmitted:ipfs:\/\/proof:3' }, baseOptions),
       /@trust-missions.*mission #1/i,
     );
+  });
+});
+
+describe('partner scout', () => {
+  it('does not announce historical partner state before baseline is initialized', () => {
+    const changes = detectPartnerChanges(
+      {
+        pulsePostIds: [1017],
+        bountyKeys: ['10:Open:prov-escrow'],
+        aanMissionKeys: ['4:TheBookDex collab ping'],
+      },
+      {
+        partner_scout_initialized: false,
+      },
+    );
+
+    assert.deepEqual(changes, []);
+  });
+
+  it('detects new relevant partner feed items after baseline', () => {
+    const changes = detectPartnerChanges(
+      {
+        pulsePostIds: [1017, 1018],
+        bountyKeys: ['10:Open:prov-escrow', '11:Open:trust escrow'],
+        aanMissionKeys: ['4:TheBookDex collab ping', '5:Trust Layer pilot'],
+      },
+      {
+        partner_scout_initialized: true,
+        seen_partner_pulse_post_ids: [1017],
+        seen_partner_bounty_keys: ['10:Open:prov-escrow'],
+        seen_partner_aan_mission_keys: ['4:TheBookDex collab ping'],
+      },
+    );
+
+    assert.deepEqual(changes, [
+      { kind: 'pulse_post', id: 1018 },
+      { kind: 'bounty', key: '11:Open:trust escrow' },
+      { kind: 'aan_mission', key: '5:Trust Layer pilot' },
+    ]);
+  });
+
+  it('builds partner scout acknowledgements', () => {
+    assert.match(buildPartnerScoutAck({ kind: 'bounty', key: '11:Open:trust escrow' }, baseOptions), /bounty/i);
+    assert.match(buildPartnerScoutAck({ kind: 'aan_mission', key: '5:Trust Layer pilot' }, baseOptions), /AAN/i);
+    assert.match(buildPartnerScoutAck({ kind: 'pulse_post', id: 1018 }, baseOptions), /agent-pulse/i);
+  });
+
+  it('filters partner pulse items to trust-layer relevant text', () => {
+    assert.equal(isRelevantPartnerText('Need escrow for a bounty proof flow'), true);
+    assert.equal(isRelevantPartnerText('Daily casino status heartbeat'), false);
   });
 });

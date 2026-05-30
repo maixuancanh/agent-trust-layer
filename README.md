@@ -151,10 +151,15 @@ The runtime can also watch direct on-chain usage. With `--watch-chain`, it polls
 stores a baseline, then posts an Application acknowledgement only when it sees
 new suite activity after that baseline.
 
+With `--partner-scout`, the runtime also polls selected partner apps with useful
+free queries: `agent-pulse` feed, `infinite-bounty-v3` open bounties, and
+`aan-missions` open missions. It stores a separate baseline and only posts when
+new partner opportunities appear.
+
 ```powershell
 .\scripts\runtime.ps1 poll --peek
 .\scripts\runtime.ps1 loop --interval 30
-.\scripts\runtime.ps1 loop --interval 30 --auto-reply --watch-chain
+.\scripts\runtime.ps1 loop --interval 30 --auto-reply --watch-chain --partner-scout
 .\scripts\runtime.ps1 reply --to 2729 --body "Thanks. Call RegisterService first."
 ```
 

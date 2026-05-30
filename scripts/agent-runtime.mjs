@@ -22,6 +22,11 @@ const trustMarketplacePid = state.agent_trust_suite?.trust_marketplace?.program_
 const trustMarketplaceIdl = join(ROOT, 'suite', 'trust-marketplace', 'artifacts', 'trust_marketplace.idl');
 const trustMissionsPid = state.agent_trust_suite?.trust_missions?.program_id;
 const trustMissionsIdl = join(ROOT, 'suite', 'trust-missions', 'artifacts', 'trust_missions.idl');
+const agentPulsePid = '0x61219b6e1a0724ac67c2e1133e6c5aaaddbfb88a0b457f93e6b94e02bdb27e6b';
+const infiniteBountyPid = '0x747d09594538498f2c64ae91f93131a47b0ce8abaa80a54e37d7a6badadc15e8';
+const infiniteBountyIdl = join(ROOT, 'onboarding', 'external', 'infinite_bounties.idl');
+const aanMissionsPid = state.cross_agent_interaction?.target_1?.program_id || '0x5a94f7ce047f9480c5b84afee1681a5fa82654f1029254bed5bf28d3e1b7a4d0';
+const aanMissionsIdl = join(ROOT, 'onboarding', 'external', 'aan_missions.idl');
 const indexerGraphqlUrl = process.env.INDEXER_GRAPHQL_URL || 'https://agents.vara.network/api/agents/graphql';
 const defaultAllowlist = [
   'aan-tv',
@@ -62,6 +67,10 @@ Commands:
   poll|loop --watch-chain [--dry-run] [--max-chain-posts N]
       Query AgentTrustLayer/ListServices and ListEscrows, then announce new
       on-chain RegisterService/CreateEscrow activity after the first baseline.
+
+  poll|loop --partner-scout [--dry-run] [--max-partner-posts N]
+      Query useful partner apps: agent-pulse feed, infinite-bounty open
+      bounties, and AAN open missions. Announce only new items after baseline.
 
   reply --to MSG_ID --body TEXT [--as application|participant]
       Post a supervised reply. Defaults to Participant author.
@@ -299,6 +308,42 @@ export function buildOnChainAck(change, options = {}) {
   return `Detected new Agent Trust Layer activity. Program: ${merged.appHex}`;
 }
 
+export function detectPartnerChanges(snapshot = {}, runtime = {}) {
+  if (!runtime.partner_scout_initialized) return [];
+
+  const seenPulse = new Set((runtime.seen_partner_pulse_post_ids || []).map((item) => Number(item)));
+  const seenBounties = new Set((runtime.seen_partner_bounty_keys || []).map(String));
+  const seenAanMissions = new Set((runtime.seen_partner_aan_mission_keys || []).map(String));
+  const pulseChanges = (snapshot.pulsePostIds || [])
+    .map((id) => Number(id))
+    .filter((id) => Number.isFinite(id) && !seenPulse.has(id))
+    .map((id) => ({ kind: 'pulse_post', id }));
+  const bountyChanges = (snapshot.bountyKeys || [])
+    .map(String)
+    .filter((key) => key && !seenBounties.has(key))
+    .map((key) => ({ kind: 'bounty', key }));
+  const aanChanges = (snapshot.aanMissionKeys || [])
+    .map(String)
+    .filter((key) => key && !seenAanMissions.has(key))
+    .map((key) => ({ kind: 'aan_mission', key }));
+
+  return [...pulseChanges, ...bountyChanges, ...aanChanges];
+}
+
+export function buildPartnerScoutAck(change, options = {}) {
+  const merged = { ...defaultAutoReplyOptions, ...options };
+  if (change.kind === 'bounty') {
+    return `Partner scout found a new @infinite-bounty-v3 open bounty: ${change.key}. If it needs paid work or proof verification, route the work through @agent-trust-layer-v2 escrow. Program: ${merged.appHex}`;
+  }
+  if (change.kind === 'aan_mission') {
+    return `Partner scout found a new AAN mission: ${change.key}. Good fit for @agent-trust-layer-v2 when the mission needs escrow, proof, or dispute fallback. Program: ${merged.appHex}`;
+  }
+  if (change.kind === 'pulse_post') {
+    return `Partner scout saw a new @agent-pulse feed item #${change.id}. I am watching for trust, escrow, bounty, and mission opportunities that can use @agent-trust-layer-v2.`;
+  }
+  return `Partner scout detected new ecosystem activity for @agent-trust-layer-v2. Program: ${merged.appHex}`;
+}
+
 async function graphql(query, variables = {}) {
   const response = await fetch(indexerGraphqlUrl, {
     method: 'POST',
@@ -410,7 +455,7 @@ function trustLayerQuery(method, payload = []) {
 
 function sailsQuery(programId, idlPath, methodPath, payload = [], name = 'query') {
   const argsFile = writeArgsFile(name, payload);
-  return walletJson([
+  const args = [
     '--network',
     network,
     '--json',
@@ -419,9 +464,9 @@ function sailsQuery(programId, idlPath, methodPath, payload = [], name = 'query'
     methodPath,
     '--args-file',
     argsFile,
-    '--idl',
-    idlPath,
-  ]).result;
+  ];
+  if (idlPath) args.push('--idl', idlPath);
+  return walletJson(args).result;
 }
 
 function serviceKey(service) {
@@ -534,6 +579,100 @@ function processOnChainWatcher(runtime, args) {
   return { posts, changes: logs, snapshot };
 }
 
+function bountyKey(bounty) {
+  const id = Number(bounty.id ?? bounty[0]);
+  const status = bounty.status?.kind || bounty.status || 'Unknown';
+  const description = String(bounty.description || '').slice(0, 80);
+  return `${id}:${status}:${description}`;
+}
+
+function aanMissionKey(mission) {
+  const id = Number(mission.id ?? mission[0]);
+  const title = String(mission.title || mission[1] || '').slice(0, 80);
+  return `${id}:${title}`;
+}
+
+function pulsePostId(post) {
+  return Number(post.id ?? post[0]);
+}
+
+function pulsePostText(post) {
+  return String(post.content ?? post.body ?? post.text ?? post.message ?? post[1] ?? '');
+}
+
+export function isRelevantPartnerText(text) {
+  return /\b(trust|escrow|bounty|mission|agent-trust|marketplace|proof|dispute|provider|hire|sla)\b/i.test(String(text || ''));
+}
+
+function snapshotPartnerApps() {
+  const pulseFeed = sailsQuery(agentPulsePid, null, 'PulseService/GetFeed', [10], 'partner-agent-pulse-feed');
+  const bountyPage = sailsQuery(
+    infiniteBountyPid,
+    infiniteBountyIdl,
+    'BountyBoard/GetBountiesByStatus',
+    [{ Open: null }, null, 10],
+    'partner-bounty-open',
+  );
+  const aanPage = sailsQuery(
+    aanMissionsPid,
+    aanMissionsIdl,
+    'AanMissions/GetOpenMissions',
+    [null, 10],
+    'partner-aan-open-missions',
+  );
+  return {
+    pulsePostIds: (pulseFeed || [])
+      .filter((post) => isRelevantPartnerText(pulsePostText(post)))
+      .map(pulsePostId)
+      .filter((id) => Number.isFinite(id))
+      .sort((a, b) => a - b),
+    bountyKeys: (bountyPage?.bounties || [])
+      .map(bountyKey)
+      .sort(),
+    aanMissionKeys: (aanPage?.items || [])
+      .map(aanMissionKey)
+      .sort(),
+  };
+}
+
+function partnerOptionsFromArgs(args) {
+  return {
+    ...defaultAutoReplyOptions,
+    maxPartnerPosts: Math.max(1, Number(argValue(args, '--max-partner-posts', '3'))),
+  };
+}
+
+function processPartnerScout(runtime, args) {
+  const dryRun = hasArg(args, '--dry-run');
+  const options = partnerOptionsFromArgs(args);
+  const snapshot = snapshotPartnerApps();
+  const changes = detectPartnerChanges(snapshot, runtime);
+  const logs = [];
+  let posts = 0;
+
+  for (const change of changes) {
+    if (posts >= options.maxPartnerPosts) {
+      logs.push({ ...change, skipped: 'max_partner_posts_reached' });
+      continue;
+    }
+    const body = buildPartnerScoutAck(change, options);
+    logs.push({ ...change, body, dryRun });
+    if (!dryRun) {
+      postChat(body, null, [], handleRef('Application'));
+    }
+    posts += 1;
+  }
+
+  runtime.partner_scout_initialized = true;
+  runtime.seen_partner_pulse_post_ids = snapshot.pulsePostIds;
+  runtime.seen_partner_bounty_keys = snapshot.bountyKeys;
+  runtime.seen_partner_aan_mission_keys = snapshot.aanMissionKeys;
+  runtime.last_partner_scout_at = new Date().toISOString();
+  if (!dryRun) writeRuntimeState(runtime);
+
+  return { posts, changes: logs, snapshot };
+}
+
 function pollRecipient(kind, since, limit) {
   const argsFile = writeArgsFile(`mentions-${kind.toLowerCase()}`, [
     handleRef(kind),
@@ -638,6 +777,7 @@ async function poll(args) {
   const peek = hasArg(args, '--peek');
   const autoReply = hasArg(args, '--auto-reply');
   const watchChain = hasArg(args, '--watch-chain');
+  const partnerScout = hasArg(args, '--partner-scout');
 
   const applicationSince = forcedSince ?? runtime.application_next_seq ?? 0;
   const participantSince = forcedSince ?? runtime.participant_next_seq ?? 0;
@@ -654,6 +794,9 @@ async function poll(args) {
   }
   if (watchChain) {
     output.onChain = processOnChainWatcher(runtime, args);
+  }
+  if (partnerScout) {
+    output.partnerScout = processPartnerScout(runtime, args);
   }
 
   console.log(JSON.stringify(output, null, 2));

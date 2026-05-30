@@ -51,9 +51,12 @@ function Start-AgentRuntime {
             "30",
             "--auto-reply",
             "--watch-chain",
+            "--partner-scout",
             "--min-reply-seconds",
             "120",
             "--max-chain-posts",
+            "3",
+            "--max-partner-posts",
             "3",
             "--max-replies",
             "3"
