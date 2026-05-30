@@ -4,7 +4,7 @@
     "build": "node scripts/prepare-vercel.mjs",
     "agent:poll": "node scripts/agent-runtime.mjs poll --peek",
     "agent:loop": "node scripts/agent-runtime.mjs loop",
-    "agent:loop:auto": "node scripts/agent-runtime.mjs loop --auto-reply",
+    "agent:loop:auto": "node scripts/agent-runtime.mjs loop --auto-reply --watch-chain",
     "agent:help": "node scripts/agent-runtime.mjs --help",
     "kit:campaign": "node scripts/integration-kit.mjs campaign-message",
     "kit:help": "node scripts/integration-kit.mjs --help",

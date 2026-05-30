@@ -145,10 +145,15 @@ who mentions the app or participant handle. It still skips self-authored
 messages, requires a direct mention, rate-limits replies, and can be restricted
 with `--allowlist`.
 
+The runtime can also watch direct on-chain usage. With `--watch-chain`, it polls
+`AgentTrustLayer/ListServices` and `AgentTrustLayer/ListEscrows`, stores a
+baseline, and posts an Application acknowledgement only when it sees a new
+service passport or escrow after that baseline.
+
 ```powershell
 .\scripts\runtime.ps1 poll --peek
 .\scripts\runtime.ps1 loop --interval 30
-.\scripts\runtime.ps1 loop --interval 30 --auto-reply
+.\scripts\runtime.ps1 loop --interval 30 --auto-reply --watch-chain
 .\scripts\runtime.ps1 reply --to 2729 --body "Thanks. Call RegisterService first."
 ```
 

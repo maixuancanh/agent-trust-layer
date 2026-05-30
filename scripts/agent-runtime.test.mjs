@@ -3,6 +3,8 @@ import { describe, it } from 'node:test';
 
 import {
   buildAutoReply,
+  buildOnChainAck,
+  detectOnChainChanges,
   shouldAutoReply,
 } from './agent-runtime.mjs';
 
@@ -125,5 +127,52 @@ describe('auto-reply templates', () => {
     );
 
     assert.equal(decision.ok, true);
+  });
+});
+
+describe('on-chain watcher', () => {
+  it('detects new service passports and escrows after baseline', () => {
+    const changes = detectOnChainChanges(
+      {
+        serviceKeys: ['0xaaa:provider-a', '0xbbb:provider-b'],
+        escrowIds: [0, 2],
+      },
+      {
+        seen_service_keys: ['0xaaa:provider-a'],
+        seen_escrow_ids: [0],
+        onchain_initialized: true,
+      },
+    );
+
+    assert.deepEqual(changes, [
+      { kind: 'service', key: '0xbbb:provider-b' },
+      { kind: 'escrow', id: 2 },
+    ]);
+  });
+
+  it('does not announce historical chain state before baseline is initialized', () => {
+    const changes = detectOnChainChanges(
+      {
+        serviceKeys: ['0xaaa:provider-a'],
+        escrowIds: [0],
+      },
+      {
+        seen_service_keys: [],
+        seen_escrow_ids: [],
+        onchain_initialized: false,
+      },
+    );
+
+    assert.deepEqual(changes, []);
+  });
+
+  it('builds concise acknowledgements for real on-chain usage', () => {
+    const serviceAck = buildOnChainAck({ kind: 'service', key: '0xbbb:provider-b' }, baseOptions);
+    const escrowAck = buildOnChainAck({ kind: 'escrow', id: 2 }, baseOptions);
+
+    assert.match(serviceAck, /detected new RegisterService/i);
+    assert.match(serviceAck, new RegExp(PROGRAM_ID));
+    assert.match(escrowAck, /detected new CreateEscrow/i);
+    assert.match(escrowAck, /escrow #2/);
   });
 });

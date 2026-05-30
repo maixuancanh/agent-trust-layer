@@ -17,6 +17,7 @@ const appHex = state.deployed_program.program_id;
 const pid = state.vara_agents_program_id;
 const voucher = state.voucher_id;
 const idl = join(process.env.USERPROFILE, '.agents', 'skills', 'vara-agent-network-skills', 'idl', 'agents_network_client.idl');
+const trustLayerIdl = join(ROOT, 'artifacts', 'agent_trust_layer.idl');
 const indexerGraphqlUrl = process.env.INDEXER_GRAPHQL_URL || 'https://agents.vara.network/api/agents/graphql';
 const defaultAllowlist = [
   'aan-tv',
@@ -53,6 +54,10 @@ Commands:
       Fetch mention bodies from the indexer and reply to external authors.
       By default this replies to any non-self author who mentions the app.
       Use --allowlist a,b,c to restrict replies to specific handles.
+
+  poll|loop --watch-chain [--dry-run] [--max-chain-posts N]
+      Query AgentTrustLayer/ListServices and ListEscrows, then announce new
+      on-chain RegisterService/CreateEscrow activity after the first baseline.
 
   reply --to MSG_ID --body TEXT [--as application|participant]
       Post a supervised reply. Defaults to Participant author.
@@ -222,6 +227,34 @@ export function buildAutoReply(task, options = {}) {
   return `${mention} thanks for the mention. For a real integration, call RegisterService to publish a service passport, then CreateEscrow for a funded work proof with dispute fallback. External-wallet receipts only; no self-funded loops. Program: ${program} Kit: ${repo}`;
 }
 
+export function detectOnChainChanges(snapshot = {}, runtime = {}) {
+  if (!runtime.onchain_initialized) return [];
+
+  const seenServices = new Set((runtime.seen_service_keys || []).map(String));
+  const seenEscrows = new Set((runtime.seen_escrow_ids || []).map((item) => Number(item)));
+  const serviceChanges = (snapshot.serviceKeys || [])
+    .map(String)
+    .filter((key) => key && !seenServices.has(key))
+    .map((key) => ({ kind: 'service', key }));
+  const escrowChanges = (snapshot.escrowIds || [])
+    .map((id) => Number(id))
+    .filter((id) => Number.isFinite(id) && !seenEscrows.has(id))
+    .map((id) => ({ kind: 'escrow', id }));
+
+  return [...serviceChanges, ...escrowChanges];
+}
+
+export function buildOnChainAck(change, options = {}) {
+  const merged = { ...defaultAutoReplyOptions, ...options };
+  if (change.kind === 'service') {
+    return `Detected new RegisterService on @agent-trust-layer-v2: ${change.key}. Next useful step: create a real funded CreateEscrow tied to a mission or bounty. Program: ${merged.appHex}`;
+  }
+  if (change.kind === 'escrow') {
+    return `Detected new CreateEscrow on @agent-trust-layer-v2: escrow #${change.id}. Provider can AcceptEscrow, SubmitWork with proof_uri, then client can ApproveWork or open dispute. Program: ${merged.appHex}`;
+  }
+  return `Detected new Agent Trust Layer activity. Program: ${merged.appHex}`;
+}
+
 async function graphql(query, variables = {}) {
   const response = await fetch(indexerGraphqlUrl, {
     method: 'POST',
@@ -296,7 +329,12 @@ function authorMention(task) {
 }
 
 function postChat(body, replyTo, mentions = [], author = handleRef('Participant')) {
-  const argsFile = writeArgsFile('reply', [body, author, mentions, Number(replyTo)]);
+  const argsFile = writeArgsFile('reply', [
+    body,
+    author,
+    mentions,
+    replyTo == null ? null : Number(replyTo),
+  ]);
   const baseArgs = [
     '--account',
     account,
@@ -320,6 +358,78 @@ function postChat(body, replyTo, mentions = [], author = handleRef('Participant'
     if (!String(error.message || error).includes('Voucher expired')) throw error;
     return wallet(baseArgs);
   }
+}
+
+function trustLayerQuery(method, payload = []) {
+  const argsFile = writeArgsFile(`trust-layer-${method.toLowerCase()}`, payload);
+  return walletJson([
+    '--network',
+    network,
+    '--json',
+    'call',
+    appHex,
+    `AgentTrustLayer/${method}`,
+    '--args-file',
+    argsFile,
+    '--idl',
+    trustLayerIdl,
+  ]).result;
+}
+
+function serviceKey(service) {
+  const owner = String(service.owner || service[0] || '');
+  const handle = String(service.handle || service[1] || '');
+  return `${owner}:${handle}`;
+}
+
+function escrowId(escrow) {
+  return Number(escrow.id ?? escrow.escrow_id ?? escrow[0]);
+}
+
+function snapshotTrustLayer() {
+  const services = trustLayerQuery('ListServices', []);
+  const escrows = trustLayerQuery('ListEscrows', []);
+  return {
+    serviceKeys: (services || []).map(serviceKey).filter((key) => key !== ':').sort(),
+    escrowIds: (escrows || []).map(escrowId).filter((id) => Number.isFinite(id)).sort((a, b) => a - b),
+  };
+}
+
+function onChainOptionsFromArgs(args) {
+  return {
+    ...defaultAutoReplyOptions,
+    maxChainPosts: Math.max(1, Number(argValue(args, '--max-chain-posts', '3'))),
+  };
+}
+
+function processOnChainWatcher(runtime, args) {
+  const dryRun = hasArg(args, '--dry-run');
+  const options = onChainOptionsFromArgs(args);
+  const snapshot = snapshotTrustLayer();
+  const changes = detectOnChainChanges(snapshot, runtime);
+  const logs = [];
+  let posts = 0;
+
+  for (const change of changes) {
+    if (posts >= options.maxChainPosts) {
+      logs.push({ ...change, skipped: 'max_chain_posts_reached' });
+      continue;
+    }
+    const body = buildOnChainAck(change, options);
+    logs.push({ ...change, body, dryRun });
+    if (!dryRun) {
+      postChat(body, null, [], handleRef('Application'));
+    }
+    posts += 1;
+  }
+
+  runtime.onchain_initialized = true;
+  runtime.seen_service_keys = snapshot.serviceKeys;
+  runtime.seen_escrow_ids = snapshot.escrowIds;
+  runtime.last_onchain_scan_at = new Date().toISOString();
+  if (!dryRun) writeRuntimeState(runtime);
+
+  return { posts, changes: logs, snapshot };
 }
 
 function pollRecipient(kind, since, limit) {
@@ -425,6 +535,7 @@ async function poll(args) {
   const forcedSince = argValue(args, '--since', null);
   const peek = hasArg(args, '--peek');
   const autoReply = hasArg(args, '--auto-reply');
+  const watchChain = hasArg(args, '--watch-chain');
 
   const applicationSince = forcedSince ?? runtime.application_next_seq ?? 0;
   const participantSince = forcedSince ?? runtime.participant_next_seq ?? 0;
@@ -438,6 +549,9 @@ async function poll(args) {
   const output = { application, participant, tasks: all };
   if (autoReply) {
     output.autoReply = await processAutoReplies(all, runtime, args);
+  }
+  if (watchChain) {
+    output.onChain = processOnChainWatcher(runtime, args);
   }
 
   console.log(JSON.stringify(output, null, 2));
