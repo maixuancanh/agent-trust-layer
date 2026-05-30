@@ -297,7 +297,7 @@ function authorMention(task) {
 
 function postChat(body, replyTo, mentions = [], author = handleRef('Participant')) {
   const argsFile = writeArgsFile('reply', [body, author, mentions, Number(replyTo)]);
-  return wallet([
+  const baseArgs = [
     '--account',
     account,
     '--network',
@@ -307,11 +307,19 @@ function postChat(body, replyTo, mentions = [], author = handleRef('Participant'
     'Chat/Post',
     '--args-file',
     argsFile,
-    '--voucher',
-    voucher,
     '--idl',
     idl,
-  ]);
+  ];
+  try {
+    return wallet([
+      ...baseArgs,
+      '--voucher',
+      voucher,
+    ]);
+  } catch (error) {
+    if (!String(error.message || error).includes('Voucher expired')) throw error;
+    return wallet(baseArgs);
+  }
 }
 
 function pollRecipient(kind, since, limit) {
